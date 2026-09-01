@@ -1,9 +1,9 @@
-import { IBuyer } from '../../types';
+import { IBuyer, TBuyerErrors } from '../../types';
 
 
 export class Buyer {
     private data: IBuyer = {
-        payment: 'card',
+        payment: null,
         email: '',
         phone: '',
         address: ''
@@ -22,7 +22,7 @@ export class Buyer {
 
     clear(): void {
         this.data = {
-            payment: 'card',
+            payment: null,
             email: '',
             phone: '',
             address: ''
@@ -30,8 +30,8 @@ export class Buyer {
     }
 
 
-    validate(): Record<string, string> {
-        const errors: Record<string, string> = {};
+    validate(): TBuyerErrors {
+        const errors: TBuyerErrors = {};
 
         if (!this.data.payment) {
             errors.payment = 'Не выбран способ оплаты';
@@ -50,22 +50,5 @@ export class Buyer {
         }
 
         return errors;
-    }
-
-
-    validateField(field: keyof IBuyer): string | null {
-        const value = this.data[field];
-
-        if (!value || value.toString().trim() === '') {
-            const messages: Record<keyof IBuyer, string> = {
-                payment: 'Не выбран способ оплаты',
-                email: 'Укажите email',
-                phone: 'Укажите телефон',
-                address: 'Укажите адрес доставки'
-            };
-            return messages[field];
-        }
-
-        return null;
     }
 }
