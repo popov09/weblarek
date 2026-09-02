@@ -1,7 +1,8 @@
 import { Card, ICardState } from './Card';
 import { categoryMap } from '../../../utils/constants';
+import { ensureElement } from '../../../utils/utils';
 
-interface ICardCatalogState extends ICardState {
+export interface ICardCatalogState extends ICardState {
     category: string;
     image: string;
 }
@@ -12,19 +13,23 @@ export class CardCatalog extends Card<ICardCatalogState> {
 
     constructor(container: HTMLElement, protected onClick: () => void) {
         super(container);
-        this.categoryElement = container.querySelector('.card__category') as HTMLElement;
-        this.imageElement = container.querySelector('.card__image') as HTMLImageElement;
+        this.categoryElement = ensureElement<HTMLElement>('.card__category', container);
+        this.imageElement = ensureElement<HTMLImageElement>('.card__image', container);
 
         container.addEventListener('click', this.onClick);
     }
 
     set category(value: string) {
-        this.setText(this.categoryElement, value);
-        const categoryClass = categoryMap[value as keyof typeof categoryMap] || 'card__category_other';
-        this.categoryElement.className = categoryClass;
+        this.categoryElement.textContent = value;
+        this.categoryElement.className = 'card__category';
+        const categoryClass = categoryMap[value as keyof typeof categoryMap];
+        if (categoryClass) {
+            this.categoryElement.classList.add(categoryClass);
+        }
     }
 
     set image(value: string) {
-        this.setImage(this.imageElement, value, this.title);
+        this.imageElement.src = value;
+        this.imageElement.alt = '';
     }
 }

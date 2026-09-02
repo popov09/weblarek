@@ -1,40 +1,30 @@
 import { Component } from '../../base/Component';
+import { ensureElement } from '../../../utils/utils';
 
 export interface ICardState {
-    id: string;
     title: string;
     price: number | null;
-    category?: string;
-    image?: string;
-    text?: string;
-    index?: number;
 }
 
-export class Card<T extends ICardState = ICardState> extends Component<T> {
+export abstract class Card<T extends ICardState = ICardState> extends Component<T> {
     protected titleElement: HTMLElement;
     protected priceElement: HTMLElement;
 
     constructor(container: HTMLElement) {
         super(container);
-        this.titleElement = container.querySelector('.card__title') as HTMLElement;
-        this.priceElement = container.querySelector('.card__price') as HTMLElement;
+        this.titleElement = ensureElement<HTMLElement>('.card__title', container);
+        this.priceElement = ensureElement<HTMLElement>('.card__price', container);
     }
 
     set title(value: string) {
-        this.setText(this.titleElement, value);
+        this.titleElement.textContent = value;
     }
 
     set price(value: number | null) {
         if (value === null) {
-            this.setText(this.priceElement, 'Бесценно');
+            this.priceElement.textContent = 'Бесценно';
         } else {
-            this.setText(this.priceElement, `${value} синапсов`);
-        }
-    }
-
-    protected setText(element: HTMLElement, value: string) {
-        if (element) {
-            element.textContent = value;
+            this.priceElement.textContent = `${value} синапсов`;
         }
     }
 }

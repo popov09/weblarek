@@ -1,11 +1,13 @@
 import { Card, ICardState } from './Card';
 import { categoryMap } from '../../../utils/constants';
+import { ensureElement } from '../../../utils/utils';
 
-interface ICardPreviewState extends ICardState {
+export interface ICardPreviewState extends ICardState {
     category: string;
     image: string;
     text: string;
-    inBasket: boolean;
+    buttonText: string;
+    buttonDisabled: boolean;
 }
 
 export class CardPreview extends Card<ICardPreviewState> {
@@ -16,36 +18,37 @@ export class CardPreview extends Card<ICardPreviewState> {
 
     constructor(container: HTMLElement, protected onClick: () => void) {
         super(container);
-        this.categoryElement = container.querySelector('.card__category') as HTMLElement;
-        this.imageElement = container.querySelector('.card__image') as HTMLImageElement;
-        this.textElement = container.querySelector('.card__text') as HTMLElement;
-        this.buttonElement = container.querySelector('.card__button') as HTMLButtonElement;
+        this.categoryElement = ensureElement<HTMLElement>('.card__category', container);
+        this.imageElement = ensureElement<HTMLImageElement>('.card__image', container);
+        this.textElement = ensureElement<HTMLElement>('.card__text', container);
+        this.buttonElement = ensureElement<HTMLButtonElement>('.card__button', container);
 
         this.buttonElement.addEventListener('click', this.onClick);
     }
 
     set category(value: string) {
-        this.setText(this.categoryElement, value);
-        const categoryClass = categoryMap[value as keyof typeof categoryMap] || 'card__category_other';
-        this.categoryElement.className = categoryClass;
+        this.categoryElement.textContent = value;
+        this.categoryElement.className = 'card__category';
+        const categoryClass = categoryMap[value as keyof typeof categoryMap];
+        if (categoryClass) {
+            this.categoryElement.classList.add(categoryClass);
+        }
     }
 
     set image(value: string) {
-        this.setImage(this.imageElement, value, this.title);
+        this.imageElement.src = value;
+        this.imageElement.alt = '';
     }
 
     set text(value: string) {
-        this.setText(this.textElement, value);
+        this.textElement.textContent = value;
     }
 
-    set inBasket(value: boolean) {
-        if (this.price === null) {
-            this.buttonElement.disabled = true;
-            this.setText(this.buttonElement, 'Недоступно');
-        } else if (value) {
-            this.setText(this.buttonElement, 'Удалить из корзины');
-        } else {
-            this.setText(this.buttonElement, 'Купить');
-        }
+    set buttonText(value: string) {
+        this.buttonElement.textContent = value;
+    }
+
+    set buttonDisabled(value: boolean) {
+        this.buttonElement.disabled = value;
     }
 }

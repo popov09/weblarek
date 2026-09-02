@@ -1,6 +1,7 @@
 import { Card, ICardState } from './Card';
+import { ensureElement } from '../../../utils/utils';
 
-interface ICardBasketState extends ICardState {
+export interface ICardBasketState extends ICardState {
     index: number;
 }
 
@@ -10,13 +11,13 @@ export class CardBasket extends Card<ICardBasketState> {
 
     constructor(container: HTMLElement, protected onDelete: () => void) {
         super(container);
-        this.indexElement = container.querySelector('.basket__item-index') as HTMLElement;
-        this.deleteButton = container.querySelector('.basket__item-delete') as HTMLButtonElement;
+        this.indexElement = ensureElement<HTMLElement>('.basket__item-index', container);
+        this.deleteButton = ensureElement<HTMLButtonElement>('.basket__item-delete', container);
 
         this.deleteButton.addEventListener('click', this.onDelete);
     }
 
     set index(value: number) {
-        this.setText(this.indexElement, String(value));
+        this.indexElement.textContent = String(value);
     }
 }

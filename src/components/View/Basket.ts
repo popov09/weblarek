@@ -1,9 +1,10 @@
 import { Component } from '../base/Component';
 import { IEvents } from '../base/Events';
 
-interface IBasketState {
+export interface IBasketState {
     items: HTMLElement[];
     total: number;
+    buttonDisabled: boolean;
 }
 
 export class Basket extends Component<IBasketState> {
@@ -17,28 +18,28 @@ export class Basket extends Component<IBasketState> {
         this.priceElement = container.querySelector('.basket__price') as HTMLElement;
         this.buttonElement = container.querySelector('.basket__button') as HTMLButtonElement;
 
-        this.buttonElement.addEventListener('click', () => {
-            this.events.emit('order:open');
-        });
+        if (this.buttonElement) {
+            this.buttonElement.addEventListener('click', () => {
+                this.events.emit('order:open');
+            });
+        }
     }
 
     set items(items: HTMLElement[]) {
-        if (items.length === 0) {
-            this.listElement.innerHTML = '<p class="basket__empty">Корзина пуста</p>';
-            this.buttonElement.disabled = true;
-        } else {
+        if (this.listElement) {
             this.listElement.replaceChildren(...items);
-            this.buttonElement.disabled = false;
         }
     }
 
     set total(value: number) {
-        this.setText(this.priceElement, `${value} синапсов`);
+        if (this.priceElement) {
+            this.priceElement.textContent = `${value} синапсов`;
+        }
     }
 
-    protected setText(element: HTMLElement, value: string) {
-        if (element) {
-            element.textContent = value;
+    set buttonDisabled(value: boolean) {
+        if (this.buttonElement) {
+            this.buttonElement.disabled = value;
         }
     }
 }

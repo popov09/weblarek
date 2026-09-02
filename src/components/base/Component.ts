@@ -1,5 +1,5 @@
 export abstract class Component<T> {
-    constructor(public readonly container: HTMLElement) {}
+    protected constructor(protected readonly container: HTMLElement) {}
 
     protected setImage(element: HTMLImageElement, src: string, alt?: string) {
         if (element) {
@@ -7,12 +7,6 @@ export abstract class Component<T> {
             if (alt) {
                 element.alt = alt;
             }
-        }
-    }
-
-    protected setText(element: HTMLElement, value: string) {
-        if (element) {
-            element.textContent = value;
         }
     }
 

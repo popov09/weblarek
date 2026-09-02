@@ -5,9 +5,7 @@ export interface IApi {
     post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
 }
 
-
 export type TPayment = 'card' | 'cash';
-
 
 export interface IProduct {
     id: string;
@@ -41,47 +39,4 @@ export interface IOrderData extends IBuyer {
 export interface IOrderResponse {
     id: string;
     total: number;
-}
-
-
-export interface ICardState {
-    id: string;
-    title: string;
-    category: string;
-    price: number | null;
-    image: string;
-    text?: string;
-    index?: number;
-}
-
-export interface IFormState {
-    valid: boolean;
-    errors: string[];
-}
-
-export interface IBasketState {
-    items: HTMLElement[];
-    total: number;
-}
-
-export interface ISuccessState {
-    total: number;
-}
-
-export interface IHeaderState {
-    counter: number;
-}
-
-export interface IGalleryState {
-    catalog: HTMLElement[];
-}
-
-export interface IOrderFormState extends IFormState {
-    payment: TPayment | null;
-    address: string;
-}
-
-export interface IContactsFormState extends IFormState {
-    email: string;
-    phone: string;
 }

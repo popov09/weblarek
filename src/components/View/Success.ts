@@ -1,6 +1,7 @@
 import { Component } from '../base/Component';
+import { ensureElement } from '../../utils/utils';
 
-interface ISuccessState {
+export interface ISuccessState {
     total: number;
 }
 
@@ -10,19 +11,13 @@ export class Success extends Component<ISuccessState> {
 
     constructor(container: HTMLElement, protected onClick: () => void) {
         super(container);
-        this.descriptionElement = container.querySelector('.order-success__description') as HTMLElement;
-        this.closeButton = container.querySelector('.order-success__close') as HTMLButtonElement;
+        this.descriptionElement = ensureElement<HTMLElement>('.order-success__description', container);
+        this.closeButton = ensureElement<HTMLButtonElement>('.order-success__close', container);
 
         this.closeButton.addEventListener('click', this.onClick);
     }
 
     set total(value: number) {
-        this.setText(this.descriptionElement, `Списано ${value} синапсов`);
-    }
-
-    protected setText(element: HTMLElement, value: string) {
-        if (element) {
-            element.textContent = value;
-        }
+        this.descriptionElement.textContent = `Списано ${value} синапсов`;
     }
 }
