@@ -1,5 +1,5 @@
 import { IBuyer, TBuyerErrors } from '../../types';
-
+import { IEvents } from '../base/Events';
 
 export class Buyer {
     private data: IBuyer = {
@@ -9,16 +9,16 @@ export class Buyer {
         address: ''
     };
 
+    constructor(protected events: IEvents) {}
 
     setData(data: Partial<IBuyer>): void {
         this.data = { ...this.data, ...data };
+        this.events.emit('buyer:changed', this.data);
     }
-
 
     getData(): IBuyer {
         return { ...this.data };
     }
-
 
     clear(): void {
         this.data = {
@@ -27,8 +27,8 @@ export class Buyer {
             phone: '',
             address: ''
         };
+        this.events.emit('buyer:changed', this.data);
     }
-
 
     validate(): TBuyerErrors {
         const errors: TBuyerErrors = {};

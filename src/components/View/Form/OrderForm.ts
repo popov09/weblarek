@@ -1,0 +1,42 @@
+import { Form, IFormState } from './Form';
+import { IEvents } from '../../base/Events';
+
+export type TPayment = 'card' | 'cash';
+
+export interface IOrderFormState extends IFormState {
+    payment: TPayment | null;
+    address: string;
+}
+
+export class OrderForm extends Form<IOrderFormState> {
+    protected cardButton: HTMLButtonElement;
+    protected cashButton: HTMLButtonElement;
+
+    constructor(container: HTMLFormElement, events: IEvents) {
+        super(container, events);
+
+        this.cardButton = container.querySelector('button[name="card"]') as HTMLButtonElement;
+        this.cashButton = container.querySelector('button[name="cash"]') as HTMLButtonElement;
+
+        if (this.cardButton) {
+            this.cardButton.addEventListener('click', () => {
+                this.events.emit('order.payment:change', { type: 'card' });
+            });
+        }
+
+        if (this.cashButton) {
+            this.cashButton.addEventListener('click', () => {
+                this.events.emit('order.payment:change', { type: 'cash' });
+            });
+        }
+    }
+
+    set payment(value: TPayment | null) {
+        if (this.cardButton) {
+            this.cardButton.classList.toggle('button_alt-active', value === 'card');
+        }
+        if (this.cashButton) {
+            this.cashButton.classList.toggle('button_alt-active', value === 'cash');
+        }
+    }
+}
