@@ -32,18 +32,18 @@ const buyerModel = new Buyer(events);
 const apiInstance = new Api(API_URL);
 const api = new AppApi(apiInstance);
 
+// Используем ensureElement для всех поисков
 const galleryContainer = ensureElement<HTMLElement>('.gallery');
 const headerContainer = ensureElement<HTMLElement>('.header');
 const modalContainer = ensureElement<HTMLElement>('.modal');
-const orderFormContainer = ensureElement<HTMLFormElement>('#order');
-const contactsFormContainer = ensureElement<HTMLFormElement>('#contacts');
 
+// Создаем компоненты через cloneTemplate
 const modal = new Modal(modalContainer, events);
 const gallery = new Gallery(galleryContainer);
 const header = new Header(headerContainer, events);
 const basket = new Basket(cloneTemplate<HTMLElement>('#basket'), events);
-const orderForm = new OrderForm(orderFormContainer, events);
-const contactsForm = new ContactsForm(contactsFormContainer, events);
+const orderForm = new OrderForm(cloneTemplate<HTMLFormElement>('#order'), events);
+const contactsForm = new ContactsForm(cloneTemplate<HTMLFormElement>('#contacts'), events);
 
 const cardPreview = new CardPreview(
     cloneTemplate<HTMLElement>('#card-preview'),
