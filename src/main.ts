@@ -32,12 +32,10 @@ const buyerModel = new Buyer(events);
 const apiInstance = new Api(API_URL);
 const api = new AppApi(apiInstance);
 
-// Используем ensureElement для всех поисков
 const galleryContainer = ensureElement<HTMLElement>('.gallery');
 const headerContainer = ensureElement<HTMLElement>('.header');
 const modalContainer = ensureElement<HTMLElement>('.modal');
 
-// Создаем компоненты через cloneTemplate
 const modal = new Modal(modalContainer, events);
 const gallery = new Gallery(galleryContainer);
 const header = new Header(headerContainer, events);
@@ -48,21 +46,14 @@ const contactsForm = new ContactsForm(cloneTemplate<HTMLFormElement>('#contacts'
 const cardPreview = new CardPreview(
     cloneTemplate<HTMLElement>('#card-preview'),
     () => {
-        const product = productsModel.getSelectedProduct();
-        if (!product) return;
-        if (cartModel.isProductInCart(product.id)) {
-            cartModel.removeItem(product.id);
-        } else {
-            cartModel.addItem(product);
-        }
-        modal.close();
+        events.emit('card-preview:button-click');
     }
 );
 
 const successComponent = new Success(
     cloneTemplate<HTMLElement>('#success'),
     () => {
-        modal.close();
+        events.emit('success:close');
     }
 );
 
@@ -74,13 +65,28 @@ api.getProducts()
         console.error('Ошибка загрузки товаров:', error);
     });
 
+events.on('card-preview:button-click', () => {
+    const product = productsModel.getSelectedProduct();
+    if (!product) return;
+    if (cartModel.isProductInCart(product.id)) {
+        cartModel.removeItem(product.id);
+    } else {
+        cartModel.addItem(product);
+    }
+    modal.close();
+});
+
+events.on('success:close', () => {
+    modal.close();
+});
+
 events.on('items:changed', () => {
     const items = productsModel.getItems();
     const cards = items.map(item => {
         const card = new CardCatalog(
             cloneTemplate<HTMLElement>('#card-catalog'),
             () => {
-                productsModel.setSelectedProduct(item);
+                events.emit('card-catalog:click', { productId: item.id });
             }
         );
         card.render({
@@ -92,6 +98,13 @@ events.on('items:changed', () => {
         return card.render();
     });
     gallery.catalog = cards;
+});
+
+events.on('card-catalog:click', (data: { productId: string }) => {
+    const product = productsModel.getProductById(data.productId);
+    if (product) {
+        productsModel.setSelectedProduct(product);
+    }
 });
 
 events.on('preview:changed', () => {
@@ -138,7 +151,7 @@ events.on('basket:changed', () => {
         const card = new CardBasket(
             cloneTemplate<HTMLElement>('#card-basket'),
             () => {
-                cartModel.removeItem(item.id);
+                events.emit('card-basket:delete', { productId: item.id });
             }
         );
         card.render({
@@ -152,6 +165,10 @@ events.on('basket:changed', () => {
     basket.items = cards;
     basket.total = total;
     basket.buttonDisabled = items.length === 0;
+});
+
+events.on('card-basket:delete', (data: { productId: string }) => {
+    cartModel.removeItem(data.productId);
 });
 
 events.on('basket:open', () => {

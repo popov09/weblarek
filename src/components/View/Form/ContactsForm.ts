@@ -1,5 +1,6 @@
 import { Form, IFormState } from './Form';
 import { IEvents } from '../../base/Events';
+import { ensureElement } from '../../../utils/utils';
 
 export interface IContactsFormState extends IFormState {
     email: string;
@@ -13,19 +14,15 @@ export class ContactsForm extends Form<IContactsFormState> {
     constructor(container: HTMLFormElement, events: IEvents) {
         super(container, events);
 
-        this.emailInput = container.querySelector('input[name="email"]') as HTMLInputElement;
-        this.phoneInput = container.querySelector('input[name="phone"]') as HTMLInputElement;
+        this.emailInput = ensureElement<HTMLInputElement>('input[name="email"]', container);
+        this.phoneInput = ensureElement<HTMLInputElement>('input[name="phone"]', container);
     }
 
     set email(value: string) {
-        if (this.emailInput) {
-            this.emailInput.value = value;
-        }
+        this.emailInput.value = value;
     }
 
     set phone(value: string) {
-        if (this.phoneInput) {
-            this.phoneInput.value = value;
-        }
+        this.phoneInput.value = value;
     }
 }
